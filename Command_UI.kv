@@ -1,0 +1,62 @@
+MyLayout:
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+        spacing: "50dp"
+
+        
+        Label:
+            text: "Command App"
+            font_size: 18
+            
+            
+                
+        
+            
+        Spinner:
+            id: Commands_Drop
+            size_hint: None,None
+            pos_hint: {"center_x": 0.5}
+            size: "250dp", "30dp"
+            text: "Commands"
+            values: root.Commands
+        
+        Spinner:
+            id: Lines_Drop
+            size_hint: None,None
+            size: Commands_Drop.width, Commands_Drop.height
+            pos_hint: {"center_x": 0.5}
+            text: "Line Number"
+            values: ['1','2','3','4','5']
+
+        TextInput:
+            id: Pass_Input
+            multiline: True
+            size_hint: None, None
+            size: Commands_Drop.width, Commands_Drop.height
+            pos_hint: {"center_x": 0.5}
+
+        # TextInput:
+        #     spacing: "10dp"
+        #     id: Text_Input
+        #     multiline: True
+        #     size_hint: None, None
+        #     size: Commands_Drop.width, Commands_Drop.height * 2.5
+        #     pos_hint: {"center_x": 0.5}
+
+        Button:
+            id: Submit_Button
+            text: "Submit"
+            size_hint: None,None
+            size: "90dp", "30dp"
+            pos_hint: {"center_x": 0.5}
+            on_press:
+                root.press()
+
+        Label:
+            size_hint_y: 0.3
+        
+            
+        
+
+        
