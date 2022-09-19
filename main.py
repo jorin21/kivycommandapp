@@ -1,6 +1,7 @@
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.widget import Widget
+from kivy.clock import Clock, mainthread
 from sGen import sGen
 from emailmanager import sendmail,readmail
 import threading
@@ -9,9 +10,16 @@ import inspect
 
 
 
+    
+
+
+    
+    
+
+
 
 #list of commands
-Commands = ['wakepc','sleeppc', 'snap']
+Commands = ['wakepc','sleeppc', 'snap', 'downfiles']
 
 #logic for any commands
 class CommandHandler():
@@ -27,6 +35,7 @@ class CommandHandler():
             message = sGen(self.LineNum,self.Pass)
 
             sendmail(message,subjects)
+            
 
     def sleeppc(self):
         if self.Command == 'sleeppc':
@@ -34,7 +43,7 @@ class CommandHandler():
             message = sGen(self.LineNum,self.Pass)
 
             sendmail(message,subjects)
-
+            
 
     def snap(self):
         if self.Command == 'snap':
@@ -42,6 +51,28 @@ class CommandHandler():
             message = sGen(self.LineNum,self.Pass)
 
             sendmail(message,subjects)
+            
+
+    def sendfiles(self):
+        if self.Command == 'downfiles':
+            subjects = 'sendfiles'
+            message = sGen(self.LineNum,self.Pass)
+
+
+            
+            # sendmail(message,subjects)
+            
+
+            
+            
+            
+            
+            
+
+
+
+
+
 
     def run(self): 
         methods = inspect.getmembers(CommandHandler, predicate=inspect.isfunction) #gets list of all methods in the class
@@ -63,6 +94,7 @@ class MyLayout(Widget):
         self.ids.Submit_Button.text = "Processing..."
         print(f'{self.Command} , {self.LineNum} , {self.Pass}')
         
+        
         t=threading.Thread(target=self.commandHandleInit, daemon=True)
         t.start()
         pass
@@ -72,12 +104,16 @@ class MyLayout(Widget):
         cH.run()
 
 
-        self.ids.Submit_Button.text = "Sent!"
-        time.sleep(2)
-        self.ids.Submit_Button.text = "Submit"
+        # self.ids.Submit_Button.text = "Sent!"
+        # time.sleep(2)
+        # self.ids.Submit_Button.text = "Submit"
         
 
-    
+    def subbuttonlabel():
+
+        print(MyLayout().ids.Submit_Button.text)
+        time.sleep(2)
+        print(MyLayout().ids.Submit_Button.text)
 buildkv = Builder.load_file("Command_UI.kv")
 
 class CommandApp(App):

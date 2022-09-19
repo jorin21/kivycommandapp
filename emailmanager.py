@@ -110,5 +110,5 @@ def readmail():
             else:
                 body = msg.get_payload(decode=True).decode()
                 
-                
-            return subject.strip(), From, body
+            response = [subject.strip(), From, body]
+            return response
