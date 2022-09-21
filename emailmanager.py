@@ -9,7 +9,6 @@ import smtplib, ssl
 import os
 import imaplib
 import email
-from time import sleep
 
 load_dotenv("./.env")
 
