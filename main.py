@@ -17,7 +17,7 @@ global Reply
 Reply = False
 
 #list of commands
-Commands = ['wakepc','sleeppc', 'snap', 'downfiles']
+Commands = ['wakepc','sleeppc', 'snap', 'downfiles', 'change']
 
 #logic for any commands
 class CommandHandler():
@@ -53,14 +53,13 @@ class CommandHandler():
 
     def sendfiles(self):
         if self.Command == 'downfiles':
-            self.method_ran = 'sendfiles'
             if Reply == False:
                 subjects = 'sendfiles'
                 message = sGen(self.LineNum,self.Pass)
                 time.sleep(2)
                 
                 self.wait_for_reply = 1
-                print('wait for reply set 1')
+                
                 sendmail(message,subjects)
             else:
                 
@@ -73,7 +72,7 @@ class CommandHandler():
 
 
             
-            # sendmail(message,subjects)
+           
             
 
             
@@ -114,12 +113,17 @@ class MyLayout(Widget):
         print(f'{self.Command} , {self.LineNum} , {self.Pass}')
         
         
-        threading.Thread(target=self.commandHandleInit, daemon=True).start()
+        th1 = threading.Thread(target=self.commandHandleInit, daemon=True)
+        th1.start()
         pass
 
     def commandHandleInit(self):
         self.cH = CommandHandler(self.Command,self.LineNum,self.Pass)
         self.cH.run()
+
+        global t
+        t = True
+
 
         if self.cH.wait_for_reply == 1:
             self.waiting()
@@ -127,38 +131,51 @@ class MyLayout(Widget):
         
         
 
-        # self.ids.Submit_Button.text = "Sent!"
-        # time.sleep(2)
-        # self.ids.Submit_Button.text = "Submit"
+        
 
     def waiting(self):
-        while True:
-
-            wait = 'Waiting.'
-            for i in range(3):
-                r = readmail()
-                self.update_but(wait)
+        
+        th2 = threading.Thread(target=self.replyhandler, daemon=True)
+        th2.start()
+        while t:
+            if th2.is_alive():
+                wait = 'Waiting.'
+                for i in range(3):
+                    self.update_but(wait)
+                    time.sleep(1)
+                    wait += '.'
+            else:
+                th2 = threading.Thread(target=self.replyhandler, daemon=True)
+                th2.start()
                 
 
 
-
+    def replyhandler(self):
+        r = readmail()
+        if self.cH.Command == 'downfiles':
+            if r['Subject'] == 'Download Files':
+                self.update_inp(reverse=True)
+                self.update_but('Submit')
+                global t
+                t = False
                 
-                if self.cH.method_ran == 'sendfiles':
-                    if r['Subject'] == 'Download Files':
-                        self.update_inp(reverse=True)
-                        self.update_but('Submit')
-                        break
+                
 
-                    if r['Subject'] == 'DropBox API Call':
-                        self.update_inp()
-                        self.update_but('Submit')
-                        global Reply
-                        Reply = True
-                        break
-                    else:
-                        print('No API Call yet')
+            if r['Subject'] == 'DropBox API Call':
+                self.update_inp()
+                self.update_but('Submit')
+                t = False
 
-                wait += '.'
+                global Reply
+                Reply = True
+
+            
+               
+
+
+               
+            else:
+                print('No API Call yet')
                 
                 
             
