@@ -9,6 +9,7 @@ import smtplib, ssl
 import os
 import imaplib
 import email
+from time import sleep
 
 load_dotenv("./.env")
 
@@ -78,7 +79,6 @@ def readmail():
     status, emails = con.select('INBOX')
     emails = int(emails[0])
     Umail = con.search(None, 'UnSeen')[1][0].split()
-    UnSeen = len(Umail)
 
     # email fetch
     stat, msg = con.fetch(str(emails), "(RFC822)")
@@ -96,8 +96,11 @@ def readmail():
             if isinstance(From, bytes):
                 From = From.decode(encoding)
                 
-            From = From[0][0].split('<')
-            From = From[1][:-1]
+            try:
+                From = From[0][0]
+            except Exception as e:
+                print(e)
+                From = 'None'
                 
             if msg.is_multipart():
                 for part in msg.walk():
@@ -110,5 +113,14 @@ def readmail():
             else:
                 body = msg.get_payload(decode=True).decode()
                 
-            response = [subject.strip(), From, body]
+            response = {'Subject': subject.strip(), 
+                        'From': From, 
+                        'Body': body}
             return response
+
+
+
+if __name__ == "__main__":
+    f = readmail()
+
+    print(f['From'])
